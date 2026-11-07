@@ -1,0 +1,31 @@
+{
+  "name": "godofprompt",
+  "version": "1.0.0",
+  "description": "God of Prompt API & CLI tool for AI agents and developers",
+  "main": "src/index.js",
+  "bin": {
+    "godofprompt": "./bin/godofprompt.js",
+    "gop": "./bin/godofprompt.js"
+  },
+  "scripts": {
+    "test": "node test/test_api.js",
+    "godofprompt": "./bin/godofprompt.js",
+    "gop": "./bin/godofprompt.js"
+  },
+  "keywords": [
+    "godofprompt",
+    "prompt-library",
+    "prompts",
+    "chatgpt",
+    "claude",
+    "gemini",
+    "ai-agent",
+    "prompt-engineering"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

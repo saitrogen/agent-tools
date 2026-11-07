@@ -1,0 +1,36 @@
+{
+  "name": "aispeech",
+  "version": "1.0.0",
+  "description": "Google AI Studio Speech & Gemini TTS API & CLI tool for AI agents and developers",
+  "main": "src/index.js",
+  "bin": {
+    "aispeech": "./bin/aispeech.js",
+    "speech": "./bin/aispeech.js"
+  },
+  "scripts": {
+    "test": "node test/test_cli.js",
+    "aispeech": "./bin/aispeech.js",
+    "speech": "./bin/aispeech.js"
+  },
+  "keywords": [
+    "aistudio",
+    "google-ai-studio",
+    "gemini-speech",
+    "tts",
+    "text-to-speech",
+    "gemini",
+    "speech-generation",
+    "ai-agent",
+    "voice-synthesis"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "api-anything": "file:./vendor/api-anything-0.1.0.tgz",
+    "playwright-core": "^1.64.1"
+  }
+}

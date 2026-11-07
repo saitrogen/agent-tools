@@ -1,0 +1,31 @@
+{
+  "name": "pinref",
+  "version": "1.0.0",
+  "description": "Pinterest Reference Moodboard & Single-Glance Vision System for AI Agents and Humans",
+  "main": "bin/pinref.js",
+  "bin": {
+    "pinref": "./bin/pinref.js"
+  },
+  "scripts": {
+    "test": "node bin/pinref.js --help",
+    "pinref": "./bin/pinref.js",
+    "search": "./bin/pinref.js search",
+    "similar": "./bin/pinref.js similar"
+  },
+  "keywords": [
+    "pinterest",
+    "reference",
+    "moodboard",
+    "agent-vision",
+    "ai-agent",
+    "contact-sheet",
+    "design-system"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "api-anything": "file:./vendor/api-anything-0.1.0.tgz",
+    "sharp": "^0.35.5"
+  }
+}

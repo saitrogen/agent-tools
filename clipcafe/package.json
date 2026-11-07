@@ -1,0 +1,31 @@
+{
+  "name": "clipcafe",
+  "version": "1.0.0",
+  "description": "Clip.Cafe Video Extractor, Search API, Downloader & Interactive Web Tool",
+  "main": "src/api.js",
+  "bin": {
+    "clipcafe": "./bin/clipcafe.js",
+    "clipdl": "./bin/clipcafe.js"
+  },
+  "scripts": {
+    "start": "node bin/clipcafe.js serve",
+    "serve": "node bin/clipcafe.js serve",
+    "test": "node test/test_api.js",
+    "clipcafe": "./bin/clipcafe.js"
+  },
+  "keywords": [
+    "clipcafe",
+    "video-downloader",
+    "movie-clips",
+    "quotes",
+    "web-tool",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

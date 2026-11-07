@@ -1,0 +1,26 @@
+{
+  "name": "agent-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo of standalone, self-contained agent tools and modular skills",
+  "scripts": {
+    "install:pinref": "npm --prefix pinref install",
+    "install:aispeech": "npm --prefix aispeech install",
+    "install:all": "npm --prefix pinref install && npm --prefix aispeech install",
+    "test:pinref": "npm --prefix pinref test",
+    "test:aispeech": "npm --prefix aispeech test",
+    "test:clipcafe": "npm --prefix clipcafe test",
+    "test:godofprompt": "npm --prefix godofprompt test",
+    "test:all": "npm --prefix pinref test && npm --prefix aispeech test && npm --prefix clipcafe test && npm --prefix godofprompt test"
+  },
+  "keywords": [
+    "agent-tools",
+    "skills",
+    "pinref",
+    "aispeech",
+    "clipcafe",
+    "godofprompt"
+  ],
+  "author": "",
+  "license": "MIT"
+}

@@ -1,0 +1,14 @@
+node_modules/
+audio/
+references/
+scratch/
+.env
+.env.local
+.DS_Store
+*.wav
+*.mp3
+*.pcm
+.session.json
+session.json
+*.cookie
+*.cookies

@@ -1,0 +1,284 @@
+{
+  "name": "pinterest",
+  "baseUrl": "https://www.pinterest.com",
+  "operations": [
+    {
+      "name": "autocomplete",
+      "request": {
+        "method": "GET",
+        "url": "https://www.pinterest.com/resource/AdvancedTypeaheadResource/get/?source_url=%2Fsearch%2Fpins%2F%3Fq%3D%7Bq%7D&data=%7B%22options%22%3A%7B%22pin_scope%22%3A%22pins%22%2C%22autocomplete_request_surface%22%3A0%2C%22count%22%3A5%2C%22term%22%3A%22%7Bq%7D%22%7D%2C%22context%22%3A%7B%7D%7D&_=1792091732244",
+        "headers": {
+          "accept": "application/json, text/javascript, */*, q=0.01",
+          "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+          "priority": "u=1, i",
+          "referer": "https://www.pinterest.com/",
+          "screen-dpr": "1",
+          "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+          "sec-ch-ua-full-version-list": "\"Google Chrome\";v=\"155.0.8059.40\", \"Chromium\";v=\"155.0.8059.40\", \"Not(A:Brand\";v=\"24.0.0.0\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-model": "\"\"",
+          "sec-ch-ua-platform": "\"macOS\"",
+          "sec-ch-ua-platform-version": "\"10_15_7\"",
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-origin",
+          "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+          "x-app-version": "7327000",
+          "x-b3-flags": "0",
+          "x-b3-parentspanid": "",
+          "x-b3-spanid": "1c4d5df4aacff8e7",
+          "x-b3-traceid": "",
+          "x-pinterest-appstate": "active",
+          "x-pinterest-pws-handler": "www/search/[scope].js",
+          "x-pinterest-source-url": "/search/pins/?q={q}",
+          "x-requested-with": "XMLHttpRequest"
+        }
+      },
+      "slots": [
+        {
+          "param": "q",
+          "at": [
+            "query:data",
+            "json:/options/term"
+          ]
+        },
+        {
+          "param": "q",
+          "at": [
+            "query:source_url"
+          ],
+          "template": "/search/pins/?q={q}",
+          "escape": "url"
+        },
+        {
+          "param": "q",
+          "at": [
+            "header:x-pinterest-source-url"
+          ],
+          "template": "/search/pins/?q={q}",
+          "escape": "url"
+        },
+        {
+          "ref": "session:autocomplete/x-b3-parentspanid@%5B%22header%3Ax-b3-parentspanid%22%5D",
+          "at": [
+            "header:x-b3-parentspanid"
+          ]
+        },
+        {
+          "ref": "session:autocomplete/x-b3-parentspanid@%5B%22header%3Ax-b3-parentspanid%22%5D",
+          "at": [
+            "header:x-b3-traceid"
+          ]
+        }
+      ],
+      "volatile": [],
+      "trigger": {
+        "url": "https://www.pinterest.com/search/pins/?q={q}"
+      },
+      "match": {
+        "method": "GET",
+        "host": "www.pinterest.com",
+        "path": "/resource/AdvancedTypeaheadResource/get/"
+      },
+      "response": {
+        "format": "json",
+        "contentType": "application/json; charset=utf-8",
+        "extract": "resource_response.data.items",
+        "pick": [
+          "label",
+          "query",
+          "url"
+        ]
+      },
+      "params": [
+        {
+          "name": "q",
+          "type": "string",
+          "required": true,
+          "example": "architecture"
+        }
+      ],
+      "readOnly": true,
+      "minTier": 1,
+      "learnedLoggedIn": true,
+      "learnedAt": "2026-10-15T19:17:03.898Z"
+    },
+    {
+      "name": "searchPins",
+      "request": {
+        "method": "GET",
+        "url": "https://www.pinterest.com/resource/BaseSearchResource/get/?source_url=%2Fsearch%2Fpins%2F%3Fq%3D%7Bq%7D&data=%7B%22options%22%3A%7B%22query%22%3A%22%7Bq%7D%22%2C%22scope%22%3A%22pins%22%2C%22appliedProductFilters%22%3A%22---%22%2C%22domains%22%3Anull%2C%22user%22%3Anull%2C%22seoDrawerEnabled%22%3Afalse%2C%22applied_unified_filters%22%3Anull%2C%22auto_correction_disabled%22%3Afalse%2C%22filter_genai%22%3Afalse%2C%22journey_depth%22%3Anull%2C%22source_id%22%3Anull%2C%22source_module_id%22%3Anull%2C%22source_url%22%3A%22%2Fsearch%2Fpins%2F%3Fq%3D%7Bq%7D%22%2C%22static_feed%22%3Afalse%2C%22selected_one_bar_modules%22%3Anull%2C%22query_pin_sigs%22%3Anull%2C%22page_size%22%3A25%2C%22gated%22%3Atrue%2C%22price_max%22%3Anull%2C%22price_min%22%3Anull%2C%22query_image_pins%22%3Anull%2C%22request_params%22%3Anull%2C%22top_pin_ids%22%3Anull%2C%22article%22%3Anull%2C%22corpus%22%3Anull%2C%22filters%22%3Anull%2C%22rs%22%3A%22direct_navigation%22%7D%2C%22context%22%3A%7B%7D%7D&_=1792091732245",
+        "headers": {
+          "accept": "application/json, text/javascript, */*, q=0.01",
+          "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+          "priority": "u=1, i",
+          "referer": "https://www.pinterest.com/",
+          "screen-dpr": "1",
+          "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+          "sec-ch-ua-full-version-list": "\"Google Chrome\";v=\"155.0.8059.40\", \"Chromium\";v=\"155.0.8059.40\", \"Not(A:Brand\";v=\"24.0.0.0\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-model": "\"\"",
+          "sec-ch-ua-platform": "\"macOS\"",
+          "sec-ch-ua-platform-version": "\"10_15_7\"",
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-origin",
+          "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+          "x-app-version": "7327000",
+          "x-b3-flags": "0",
+          "x-b3-parentspanid": "",
+          "x-b3-spanid": "19dbcd36136335a0",
+          "x-b3-traceid": "",
+          "x-pinterest-appstate": "active",
+          "x-pinterest-pws-handler": "www/search/[scope].js",
+          "x-pinterest-source-url": "/search/pins/?q={q}",
+          "x-requested-with": "XMLHttpRequest"
+        }
+      },
+      "slots": [
+        {
+          "param": "q",
+          "at": [
+            "query:data",
+            "json:/options/query"
+          ]
+        },
+        {
+          "param": "q",
+          "at": [
+            "query:source_url"
+          ],
+          "template": "/search/pins/?q={q}",
+          "escape": "url"
+        },
+        {
+          "param": "q",
+          "at": [
+            "query:data",
+            "json:/options/source_url"
+          ],
+          "template": "/search/pins/?q={q}",
+          "escape": "url"
+        },
+        {
+          "param": "q",
+          "at": [
+            "header:x-pinterest-source-url"
+          ],
+          "template": "/search/pins/?q={q}",
+          "escape": "url"
+        },
+        {
+          "ref": "session:searchPins/x-b3-parentspanid@%5B%22header%3Ax-b3-parentspanid%22%5D",
+          "at": [
+            "header:x-b3-parentspanid"
+          ]
+        },
+        {
+          "ref": "session:searchPins/x-b3-parentspanid@%5B%22header%3Ax-b3-parentspanid%22%5D",
+          "at": [
+            "header:x-b3-traceid"
+          ]
+        }
+      ],
+      "volatile": [],
+      "trigger": {
+        "url": "https://www.pinterest.com/search/pins/?q={q}"
+      },
+      "match": {
+        "method": "GET",
+        "host": "www.pinterest.com",
+        "path": "/resource/BaseSearchResource/get/"
+      },
+      "response": {
+        "format": "json",
+        "contentType": "application/json; charset=utf-8",
+        "extract": "resource_response.data.results",
+        "pick": [
+          "id",
+          "node_id",
+          "dominant_color",
+          "image=images.736x.url"
+        ]
+      },
+      "params": [
+        {
+          "name": "q",
+          "type": "string",
+          "required": true,
+          "example": "architecture"
+        }
+      ],
+      "readOnly": true,
+      "minTier": 1,
+      "learnedLoggedIn": true,
+      "learnedAt": "2026-10-15T19:17:15.541Z"
+    },
+    {
+      "name": "getPin",
+      "request": {
+        "method": "GET",
+        "url": "https://www.pinterest.com/pin/%7BpinId%7D/",
+        "headers": {
+          "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+          "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+          "priority": "u=0, i",
+          "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+          "sec-ch-ua-full-version-list": "\"Google Chrome\";v=\"155.0.8059.40\", \"Chromium\";v=\"155.0.8059.40\", \"Not(A:Brand\";v=\"24.0.0.0\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-model": "\"\"",
+          "sec-ch-ua-platform": "\"macOS\"",
+          "sec-ch-ua-platform-version": "\"10_15_7\"",
+          "sec-fetch-dest": "document",
+          "sec-fetch-mode": "navigate",
+          "sec-fetch-site": "none",
+          "sec-fetch-user": "?1",
+          "upgrade-insecure-requests": "1",
+          "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+        }
+      },
+      "slots": [
+        {
+          "param": "pinId",
+          "at": [
+            "path:1"
+          ]
+        }
+      ],
+      "volatile": [],
+      "trigger": {
+        "url": "https://www.pinterest.com/pin/{pinId}/"
+      },
+      "match": {
+        "method": "GET",
+        "host": "www.pinterest.com",
+        "path": "/pin/*/"
+      },
+      "response": {
+        "format": "html",
+        "contentType": "text/html; charset=utf-8",
+        "html": {
+          "items": "html",
+          "fields": {
+            "title": "meta[name=\"og:title\"]@content",
+            "description": "meta[name=\"og:description\"]@content",
+            "image": "meta[name=\"twitter:image:src\"]@content",
+            "repins": "meta[name=\"pinterestapp:repins\"]@content"
+          }
+        }
+      },
+      "params": [
+        {
+          "name": "pinId",
+          "type": "string",
+          "required": true,
+          "example": "698198748512670920"
+        }
+      ],
+      "readOnly": true,
+      "minTier": 1,
+      "learnedLoggedIn": true,
+      "learnedAt": "2026-10-15T19:19:07.421Z"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "api-anything": {
+      "command": "node",
+      "args": [
+        "/Users/sainul/projects/playground/pintrest/node_modules/api-anything/dist/cli.js",
+        "mcp"
+      ]
+    }
+  }
+}

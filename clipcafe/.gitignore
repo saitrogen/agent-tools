@@ -1,0 +1,7 @@
+node_modules/
+downloads/
+*.mp4
+*.srt
+*.vtt
+.DS_Store
+

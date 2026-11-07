@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clip.Cafe Video Downloader & Explorer</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="background-glow"></div>
+  
+  <header class="top-nav">
+    <div class="logo-area">
+      <div class="logo-icon">🎬</div>
+      <div class="logo-text">
+        <span class="logo-title">ClipCafe</span>
+        <span class="logo-badge">Downloader</span>
+      </div>
+    </div>
+    <div class="nav-links">
+      <span class="status-indicator"><span class="dot"></span> Direct Stream API Active</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero-section">
+      <h1 class="hero-title">Download Any <span class="gradient-text">Clip.Cafe</span> Scene</h1>
+      <p class="hero-subtitle">Bypass login gates, download uncompressed 1080p & 4K MP4 movie scenes with one click, extract transcripts & SRT subtitles.</p>
+
+      <!-- Input Tabs -->
+      <div class="input-container">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="url">Paste Clip Link</button>
+          <button class="tab-btn" data-tab="search">Search Quotes / Movies</button>
+        </div>
+
+        <!-- URL Input Tab -->
+        <div id="tab-url" class="tab-content active">
+          <form id="urlForm" class="search-form">
+            <div class="input-wrapper">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+              <input type="text" id="urlInput" placeholder="Paste clip URL (e.g. https://clip.cafe/... or clip slug)" autocomplete="off" spellcheck="false" required>
+            </div>
+            <button type="submit" class="submit-btn" id="fetchBtn">
+              <span>Fetch Clip</span>
+            </button>
+          </form>
+          <div class="quick-examples">
+            <span>Try:</span>
+            <button type="button" class="example-chip" data-url="https://clip.cafe/harry-potter-the-deathly-hallows-part-2-2011/it-the-quality-of-ones-convictions-determines-success-s1/">Harry Potter: Quality of Convictions</button>
+            <button type="button" class="example-chip" data-url="https://clip.cafe/the-matrix-1999/but-are-the-gatekeepers/">The Matrix: Gatekeepers</button>
+            <button type="button" class="example-chip" data-url="https://clip.cafe/touch-of-evil-1958/youre-a-killer/">Touch of Evil</button>
+          </div>
+        </div>
+
+        <!-- Search Tab -->
+        <div id="tab-search" class="tab-content">
+          <form id="searchForm" class="search-form">
+            <div class="input-wrapper">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="searchInput" placeholder="Search by movie quote, character, or title (e.g. 'gatekeepers', 'convictions')..." autocomplete="off" spellcheck="false" required>
+            </div>
+            <button type="submit" class="submit-btn" id="searchBtn">
+              <span>Search</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Loading State -->
+    <div id="loading" class="loading-state hidden">
+      <div class="spinner"></div>
+      <p id="loadingText">Inspecting clip stream & metadata...</p>
+    </div>
+
+    <!-- Active Clip Showcase / Downloader -->
+    <section id="clipShowcase" class="clip-showcase hidden">
+      <div class="player-card">
+        <div class="video-wrapper">
+          <video id="videoPlayer" controls preload="metadata" playsinline>
+            <source id="videoSource" src="" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        
+        <div class="clip-details">
+          <div class="clip-meta-tags">
+            <span class="badge badge-resolution" id="metaResolution">HD MP4</span>
+            <span class="badge badge-duration" id="metaDuration">--:--</span>
+            <span class="badge badge-year" id="metaYear">Year</span>
+          </div>
+
+          <h2 class="clip-title" id="clipTitle">Movie Clip Title</h2>
+          <div class="movie-name" id="movieName">Movie Title</div>
+
+          <div class="transcript-box">
+            <span class="transcript-label">Quote Transcript:</span>
+            <p id="clipTranscript" class="transcript-text">"..."</p>
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn btn-primary" id="downloadMp4Btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Download MP4 Video</span>
+            </button>
+
+            <button class="btn btn-secondary" id="downloadSubBtn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              <span>Download Subtitles (.srt)</span>
+            </button>
+
+            <button class="btn btn-outline" id="copyLinkBtn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy Direct MP4 Link</span>
+            </button>
+          </div>
+
+          <div class="direct-link-bar">
+            <input type="text" id="directLinkInput" readonly spellcheck="false">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search Results Grid -->
+    <section id="resultsSection" class="results-section hidden">
+      <div class="results-header">
+        <h3 id="resultsCount">Search Results</h3>
+      </div>
+      <div id="resultsGrid" class="results-grid"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>ClipCafe Web Tool • Direct MP4 & Subtitle Extraction System</p>
+  </footer>
+
+  <div id="toast" class="toast">Link copied to clipboard!</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
