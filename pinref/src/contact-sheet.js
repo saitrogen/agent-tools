@@ -9,6 +9,16 @@ function escapeXml(str) {
     .replace(/'/g, '&apos;');
 }
 
+function getSourceBadgeColor(source) {
+  return source === 'dribbble' ? '#EA4C89' : '#E60023';
+}
+
+function formatSourceLabel(source) {
+  if (source === 'dribbble') return 'Dribbble';
+  if (source === 'all') return 'Pinterest + Dribbble';
+  return 'Pinterest';
+}
+
 /**
  * Builds a single composite contact sheet JPEG from downloaded image buffers.
  */
@@ -20,6 +30,7 @@ async function buildContactSheet(items, title, outputPath, options = {}) {
   const margin = options.margin || 30;
   const gap = options.gap || 20;
   const headerH = options.headerH || 90;
+  const sourceLabel = formatSourceLabel(options.source || 'pinterest');
 
   const totalW = margin * 2 + cols * tileW + (cols - 1) * gap;
   const totalH = margin * 2 + headerH + rows * tileH + (rows - 1) * gap;
@@ -31,7 +42,7 @@ async function buildContactSheet(items, title, outputPath, options = {}) {
         Pinref Reference Sheet: ${escapeXml(title)}
       </text>
       <text x="${margin}" y="75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#8E8E93">
-        ${items.length} Reference Images · Single-Glance Vision Grid · Identify by Index # or Pin ID
+        ${items.length} Reference Images · ${escapeXml(sourceLabel)} · Single-Glance Vision Grid · Identify by Index # or ID
       </text>
     </svg>
   `);
@@ -56,15 +67,24 @@ async function buildContactSheet(items, title, outputPath, options = {}) {
       continue;
     }
 
+    const itemSource = item.source || 'pinterest';
+    const badgeColor = getSourceBadgeColor(itemSource);
     const shortId = String(item.id).slice(0, 18);
+    const similarCmd = itemSource === 'dribbble'
+      ? `pinref similar ${shortId.slice(0, 12)} -S dribbble`
+      : `pinref similar ${shortId.slice(0, 14)}`;
+    const primaryLine = itemSource === 'dribbble' && item.title
+      ? `${item.title.slice(0, 26)}${item.title.length > 26 ? '…' : ''}`
+      : `ID: ${shortId}${String(item.id).length > 18 ? '...' : ''}`;
+
     const labelSvg = Buffer.from(`
       <svg width="${tileW}" height="55">
         <rect x="0" y="0" width="${tileW}" height="55" fill="#1C1C1E" rx="0"/>
-        <rect x="10" y="10" width="34" height="34" fill="#E60023" rx="6"/>
+        <rect x="10" y="10" width="34" height="34" fill="${badgeColor}" rx="6"/>
         <text x="27" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="15" font-weight="bold" fill="#FFFFFF" text-anchor="middle">#${item.index}</text>
         <circle cx="58" cy="27" r="8" fill="${item.dominantColor}" stroke="#444" stroke-width="1.5"/>
-        <text x="74" y="24" font-family="monospace" font-size="11" font-weight="bold" fill="#F2F2F7">ID: ${escapeXml(shortId)}...</text>
-        <text x="74" y="40" font-family="monospace" font-size="10" fill="#8E8E93">pinref similar ${escapeXml(shortId.slice(0, 14))}</text>
+        <text x="74" y="24" font-family="monospace" font-size="11" font-weight="bold" fill="#F2F2F7">${escapeXml(primaryLine)}</text>
+        <text x="74" y="40" font-family="monospace" font-size="10" fill="#8E8E93">${escapeXml(similarCmd)}</text>
       </svg>
     `);
 

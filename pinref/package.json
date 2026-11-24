@@ -1,6 +1,6 @@
 {
   "name": "pinref",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Pinterest Reference Moodboard & Single-Glance Vision System for AI Agents and Humans",
   "main": "bin/pinref.js",
   "bin": {

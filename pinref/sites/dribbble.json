@@ -1,0 +1,140 @@
+{
+  "name": "dribbble",
+  "baseUrl": "https://dribbble.com",
+  "operations": [
+    {
+      "name": "searchShots",
+      "request": {
+        "method": "GET",
+        "url": "https://dribbble.com/search/%7Bq%7D",
+        "headers": {
+          "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+          "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+          "cache-control": "max-age=0",
+          "priority": "u=0, i",
+          "referer": "https://dribbble.com/search/{q}",
+          "sec-ch-ua": "\"Chromium\";v=\"158\", \"Not.A/Brand\";v=\"24\", \"Google Chrome\";v=\"158\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": "\"macOS\"",
+          "sec-fetch-dest": "document",
+          "sec-fetch-mode": "navigate",
+          "sec-fetch-site": "same-origin",
+          "upgrade-insecure-requests": "1",
+          "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36"
+        }
+      },
+      "slots": [
+        {
+          "param": "q",
+          "at": [
+            "path:1"
+          ]
+        },
+        {
+          "param": "q",
+          "at": [
+            "header:referer"
+          ],
+          "template": "https://dribbble.com/search/{q}"
+        }
+      ],
+      "volatile": [],
+      "trigger": {
+        "url": "https://dribbble.com/search/{q}"
+      },
+      "match": {
+        "method": "GET",
+        "host": "dribbble.com",
+        "path": "/search/*"
+      },
+      "response": {
+        "format": "embedded",
+        "contentType": "text/html; charset=utf-8",
+        "extract": "[\"@graph\"][3].itemListElement",
+        "pick": [
+          "title=item.name",
+          "url=item.url",
+          "image=item.image",
+          "author=item.creator.name"
+        ],
+        "embedded": {
+          "regex": "application/ld\\+json[^>]*>\\s*(\\{)(?=[^<]*?\"@type\"\\s*:\\s*\"CollectionPage\")"
+        }
+      },
+      "params": [
+        {
+          "name": "q",
+          "type": "string",
+          "required": true,
+          "example": "dashboard"
+        }
+      ],
+      "readOnly": true,
+      "minTier": 1,
+      "learnedLoggedIn": true,
+      "learnedAt": "2026-11-24T19:49:34.179Z"
+    },
+    {
+      "name": "getShot",
+      "request": {
+        "method": "GET",
+        "url": "https://dribbble.com/shots/%7BshotId%7D",
+        "headers": {
+          "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+          "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+          "priority": "u=0, i",
+          "sec-ch-ua": "\"Chromium\";v=\"158\", \"Not.A/Brand\";v=\"24\", \"Google Chrome\";v=\"158\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": "\"macOS\"",
+          "sec-fetch-dest": "document",
+          "sec-fetch-mode": "navigate",
+          "sec-fetch-site": "none",
+          "sec-fetch-user": "?1",
+          "upgrade-insecure-requests": "1",
+          "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36"
+        }
+      },
+      "slots": [
+        {
+          "param": "shotId",
+          "at": [
+            "path:1"
+          ]
+        }
+      ],
+      "volatile": [],
+      "trigger": {
+        "url": "https://dribbble.com/shots/{shotId}"
+      },
+      "match": {
+        "method": "GET",
+        "host": "dribbble.com",
+        "path": "/shots/*"
+      },
+      "response": {
+        "format": "html",
+        "contentType": "text/html; charset=utf-8",
+        "html": {
+          "items": "head",
+          "fields": {
+            "title": "meta[property=\"og:title\"]@content",
+            "description": "meta[name=\"description\"]@content",
+            "image": "meta[property=\"og:image\"]@content"
+          }
+        }
+      },
+      "params": [
+        {
+          "name": "shotId",
+          "type": "string",
+          "required": true,
+          "example": "27496681"
+        }
+      ],
+      "readOnly": true,
+      "minTier": 1,
+      "learnedLoggedIn": true,
+      "learnedAt": "2026-11-24T19:50:15.873Z"
+    }
+  ]
+}

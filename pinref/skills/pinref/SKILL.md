@@ -1,6 +1,6 @@
 ---
 name: pinref
-description: Search and gather visual reference moodboards from Pinterest as a single composite contact sheet. Use when the user asks for design inspiration, character or environment references, moodboards, textures, UI/UX examples, or wants to explore visual styles without consuming dozens of separate image tokens.
+description: Search and gather visual reference moodboards from Pinterest and Dribbble as a single composite contact sheet. Use when the user asks for design inspiration, character or environment references, moodboards, textures, UI/UX examples, or wants to explore visual styles without consuming dozens of separate image tokens.
 ---
 
 # Pinref - Visual Reference & Moodboard System
@@ -46,8 +46,14 @@ When a user asks for visual references (e.g., "Find character concepts", "Show m
 ### 1. Run the Search Command
 Execute Pinref via terminal:
 ```bash
-# Default: saves to OS temp folder (clean, zero workspace clutter)
+# Default (Pinterest, saves to OS temp folder):
 pinref search "<query>" --count 12
+
+# Dribbble search (requires local browser session imported via `api-anything login dribbble.com`):
+pinref search "<query>" --source dribbble --count 12
+
+# Combined Pinterest + Dribbble moodboard:
+pinref search "<query>" --all --count 12
 
 # Persist in current project workspace (./references/<query-slug>/):
 pinref search "<query>" --save
@@ -86,10 +92,12 @@ This fetches the pin's detailed metadata, extracts core concepts, and automatica
 
 | Command | Action | Output Destination |
 | :--- | :--- | :--- |
-| `pinref search "<query>"` | Fetch & compile reference sheet | System Temp (`/tmp/pinref/...`) |
+| `pinref search "<query>"` | Fetch & compile Pinterest sheet | System Temp (`/tmp/pinref/...`) |
+| `pinref search "<query>" --source dribbble` | Fetch & compile Dribbble sheet (`-d`) | System Temp (`/tmp/pinref/...`) |
+| `pinref search "<query>" --all` | Combine Pinterest + Dribbble results | System Temp (`/tmp/pinref/...`) |
 | `pinref search "<query>" --save` | Fetch & save to project workspace | `./references/<slug>/` |
-| `pinref similar "<pinId>"` | Fetch variations matching a pin | System Temp (or pass `--save`) |
-| `pinref pin "<pinId>"` | Inspect title, description, repins | Metadata printed to stdout |
+| `pinref similar "<id>" [--source dribbble]` | Fetch variations matching a Pin or Shot | System Temp (or pass `--save`) |
+| `pinref pin "<id>"` / `pinref shot "<id>"` | Inspect title, description, image | Metadata printed to stdout |
 | `pinref clean` | Clear cached temp references | Deletes temp cache |
 
 ---

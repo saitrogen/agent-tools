@@ -12,7 +12,11 @@ function escapeXml(str) {
 /**
  * Builds a local, interactive HTML gallery viewer.
  */
-function buildHtmlGallery(items, queryTitle, outputPath) {
+function buildHtmlGallery(items, queryTitle, outputPath, options = {}) {
+  const source = options.source || 'pinterest';
+  const accent = source === 'dribbble' ? '#ea4c89' : '#e60023';
+  const sourceLabel = source === 'dribbble' ? 'Dribbble' : source === 'all' ? 'Pinterest + Dribbble' : 'Pinterest';
+
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +27,7 @@ function buildHtmlGallery(items, queryTitle, outputPath) {
     :root {
       --bg: #0f1013;
       --card-bg: #1c1d22;
-      --accent: #e60023;
+      --accent: ${accent};
       --text: #f0f0f5;
       --muted: #888995;
       --border: #2c2d35;
@@ -98,6 +102,19 @@ function buildHtmlGallery(items, queryTitle, outputPath) {
       border-radius: 6px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
+    .source-pill {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(15, 16, 19, 0.78);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+      text-transform: capitalize;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
     .color-swatch {
       width: 16px;
       height: 16px;
@@ -111,8 +128,14 @@ function buildHtmlGallery(items, queryTitle, outputPath) {
       padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       flex: 1;
+    }
+    .title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.35;
     }
     .id-row {
       display: flex;
@@ -164,30 +187,39 @@ function buildHtmlGallery(items, queryTitle, outputPath) {
   <header>
     <div>
       <h1>Pinref Moodboard: <span>${escapeXml(queryTitle)}</span></h1>
-      <div class="subtitle">${items.length} Reference Images · Identifiable Badges (#1 - #${items.length}) · Click to inspect or branch</div>
+      <div class="subtitle">${items.length} Reference Images · ${escapeXml(sourceLabel)} · Identifiable Badges (#1 - #${items.length}) · Click to inspect or branch</div>
     </div>
   </header>
   <div class="grid">
-    ${items.map(it => `
+    ${items.map(it => {
+      const itemSource = it.source || 'pinterest';
+      const badgeBg = itemSource === 'dribbble' ? '#ea4c89' : '#e60023';
+      const similarCmd = itemSource === 'dribbble'
+        ? `pinref similar '${escapeXml(String(it.id))}' --source dribbble`
+        : `pinref similar '${escapeXml(String(it.id))}'`;
+      return `
       <div class="card">
         <div class="img-box">
-          <span class="badge">#${it.index}</span>
+          <span class="badge" style="background:${badgeBg}">#${it.index}</span>
+          <span class="source-pill">${escapeXml(itemSource)}</span>
           <a href="${escapeXml(it.filename)}" target="_blank" title="View Full Resolution">
             <img src="${escapeXml(it.filename)}" alt="Reference #${it.index}">
           </a>
         </div>
         <div class="info">
+          ${it.title ? `<div class="title">${escapeXml(it.title)}</div>` : ''}
           <div class="id-row">
-            <span><span class="color-swatch" style="background:${it.dominantColor}"></span>ID</span>
-            <span title="${escapeXml(String(it.id))}">${escapeXml(String(it.id).slice(0, 16))}...</span>
+            <span><span class="color-swatch" style="background:${it.dominantColor}"></span>${it.author ? escapeXml(it.author) : 'ID'}</span>
+            <span title="${escapeXml(String(it.id))}">${escapeXml(String(it.id).slice(0, 16))}${String(it.id).length > 16 ? '...' : ''}</span>
           </div>
           <div class="actions">
-            <button onclick="copyText('${escapeXml(String(it.id))}', 'Copied Pin ID!')">📋 Copy ID</button>
-            <button onclick="copyText('pinref similar \\'${escapeXml(String(it.id))}\\'', 'Copied Similar Command!')">⚡ More Like This</button>
+            <button onclick="copyText('${escapeXml(String(it.id))}', 'Copied ID!')">📋 Copy ID</button>
+            <button onclick="copyText('${similarCmd}', 'Copied Similar Command!')">⚡ More Like This</button>
           </div>
         </div>
       </div>
-    `).join('')}
+    `;
+    }).join('')}
   </div>
   <div id="toast" class="toast"></div>
   <script>

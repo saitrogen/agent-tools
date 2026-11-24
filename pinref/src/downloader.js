@@ -26,6 +26,10 @@ async function downloadBatch(items, outputDir) {
         downloaded.push({
           index: index + 1,
           id: item.id,
+          source: item.source || 'pinterest',
+          title: item.title || '',
+          author: item.author || '',
+          pageUrl: item.url || '',
           dominantColor: item.dominant_color || '#333333',
           filename,
           filePath,
@@ -51,6 +55,10 @@ async function downloadBatch(items, outputDir) {
         items: downloaded.map(d => ({
           index: d.index,
           id: d.id,
+          source: d.source,
+          ...(d.title ? { title: d.title } : {}),
+          ...(d.author ? { author: d.author } : {}),
+          ...(d.pageUrl ? { pageUrl: d.pageUrl } : {}),
           dominantColor: d.dominantColor,
           file: d.filename,
           url: d.remoteUrl

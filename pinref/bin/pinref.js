@@ -3,23 +3,30 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const PinterestApi = require('../src/api');
+const ReferenceApi = require('../src/api');
 const { downloadBatch } = require('../src/downloader');
 const { buildContactSheet } = require('../src/contact-sheet');
 const { buildHtmlGallery } = require('../src/gallery');
 
 const args = process.argv.slice(2);
+const VALID_SOURCES = new Set(['pinterest', 'dribbble', 'all']);
 
 function showHelp() {
   console.log(`
-Pinref 📌 - Pinterest Reference Moodboard & Single-Glance Vision CLI
+Pinref 📌 - Multi-Source Reference Moodboard & Single-Glance Vision CLI
 
 USAGE:
   pinref search <query> [options]       Search & build a reference sheet
-  pinref similar <pinId> [options]      Find more references similar to a Pin
-  pinref pin <pinId>                    Inspect single pin metadata
+  pinref similar <id> [options]         Find more references similar to a Pin or Shot
+  pinref pin <id> [options]             Inspect single Pin or Shot metadata (alias: shot)
   pinref clean [options]                Clean cached temp or local references
   pinref "<query>"                      Quick shortcut for search
+
+SOURCE OPTIONS:
+  -S, --source <name>     Reference source: pinterest (default), dribbble, all
+  -d, --dribbble          Shorthand for --source dribbble
+  -p, --pinterest         Shorthand for --source pinterest
+  --all                   Shorthand for --source all
 
 STORAGE OPTIONS:
   (default)               Saves to system temp folder (${os.tmpdir()}/pinref)
@@ -33,14 +40,19 @@ OTHER OPTIONS:
   -v, --version           Show version
 
 EXAMPLES:
-  # Quick ephemeral vision check (saves to temp):
+  # Pinterest search (default, saves to temp):
   pinref search "cyberpunk character design" --count 12
 
-  # Persist references in current project workspace:
-  pinref search "minimalist architecture moodboard" --save
+  # Dribbble search:
+  pinref search "fintech dashboard" --source dribbble
+  pinref search "saas landing page" -d --save
 
-  # Branch variations and save locally:
-  pinref similar "1057008975051301499" -s
+  # Combined Pinterest + Dribbble moodboard:
+  pinref search "dark mode mobile app" --all
+
+  # Inspect or branch a Dribbble shot:
+  pinref shot "27496681" --source dribbble
+  pinref similar "27496681" --source dribbble
 
   # Clean temp cache:
   pinref clean
@@ -52,7 +64,8 @@ function parseOptions(rawArgs) {
     count: 12,
     out: null,
     save: false,
-    cleanLocal: false
+    cleanLocal: false,
+    source: 'pinterest'
   };
   const filtered = [];
 
@@ -64,11 +77,24 @@ function parseOptions(rawArgs) {
       options.out = rawArgs[++i];
     } else if (arg === '-s' || arg === '--save' || arg === '--local') {
       options.save = true;
+    } else if (arg === '-S' || arg === '--source') {
+      const val = (rawArgs[++i] || '').toLowerCase();
+      if (!VALID_SOURCES.has(val)) {
+        console.error(`❌ Error: Invalid source "${val}". Use: pinterest, dribbble, or all.`);
+        process.exit(1);
+      }
+      options.source = val;
+    } else if (arg === '-d' || arg === '--dribbble') {
+      options.source = 'dribbble';
+    } else if (arg === '-p' || arg === '--pinterest') {
+      options.source = 'pinterest';
+    } else if (arg === '--all') {
+      options.source = 'all';
     } else if (arg === '-h' || arg === '--help') {
       showHelp();
       process.exit(0);
     } else if (arg === '-v' || arg === '--version') {
-      console.log('Pinref v1.0.0');
+      console.log('Pinref v1.1.0');
       process.exit(0);
     } else {
       filtered.push(arg);
@@ -107,6 +133,13 @@ async function run() {
     return;
   }
 
+  if (command === 'shot') {
+    command = 'pin';
+    if (options.source === 'pinterest') {
+      options.source = 'dribbble';
+    }
+  }
+
   if (command !== 'search' && command !== 'similar' && command !== 'pin') {
     param = remaining.join(' ');
     command = 'search';
@@ -114,15 +147,19 @@ async function run() {
 
   if (command === 'pin') {
     if (!param) {
-      console.error('❌ Error: Pin ID required. Usage: pinref pin <pinId>');
+      console.error('❌ Error: Pin or Shot ID required. Usage: pinref pin <id> [--source dribbble]');
       process.exit(1);
     }
-    console.log(`\n📌 Inspecting Pin: ${param}...`);
-    const pin = PinterestApi.getPin(param);
-    console.log(`\nTitle:       ${pin.title}`);
-    console.log(`Description: ${pin.description || 'N/A'}`);
-    console.log(`Repins:      ${pin.repins || '0'}`);
-    console.log(`Image:       ${pin.image}\n`);
+    const itemSource = options.source === 'all' ? 'pinterest' : options.source;
+    const label = itemSource === 'dribbble' ? 'Shot' : 'Pin';
+    console.log(`\n📌 Inspecting ${label} (${itemSource}): ${param}...`);
+    const item = ReferenceApi.getItem(itemSource, param);
+    console.log(`\nTitle:       ${item.title}`);
+    console.log(`Description: ${item.description || 'N/A'}`);
+    if (item.repins !== undefined) {
+      console.log(`Repins:      ${item.repins || '0'}`);
+    }
+    console.log(`Image:       ${item.image}\n`);
     return;
   }
 
@@ -130,13 +167,14 @@ async function run() {
 
   if (command === 'similar') {
     if (!param) {
-      console.error('❌ Error: Pin ID required. Usage: pinref similar <pinId>');
+      console.error('❌ Error: Pin or Shot ID required. Usage: pinref similar <id> [--source dribbble]');
       process.exit(1);
     }
-    console.log(`\n🔍 Looking up Pin details for ID: ${param}...`);
-    const pin = PinterestApi.getPin(param);
-    console.log(`📌 Found Pin: "${pin.title}"`);
-    const cleaned = (pin.title || '')
+    const lookupSource = options.source === 'all' ? 'pinterest' : options.source;
+    console.log(`\n🔍 Looking up ${lookupSource} details for ID: ${param}...`);
+    const item = ReferenceApi.getItem(lookupSource, param);
+    console.log(`📌 Found: "${item.title}"`);
+    const cleaned = (item.title || '')
       .split('|')[0]
       .replace(/[^a-zA-Z0-9\s]/g, ' ')
       .trim();
@@ -150,11 +188,12 @@ async function run() {
     process.exit(1);
   }
 
-  const slug = searchQuery
+  const baseSlug = searchQuery
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .slice(0, 40)
-    .replace(/^-|-$/g, '') || 'pinterest-reference';
+    .replace(/^-|-$/g, '') || 'reference';
+  const slug = options.source === 'pinterest' ? baseSlug : `${options.source}-${baseSlug}`;
 
   // Output destination: custom path > --save (current project) > default (os.tmpdir)
   let outputDir;
@@ -169,8 +208,14 @@ async function run() {
     isTemp = true;
   }
 
-  console.log(`\n📡 Fetching reference images from Pinterest API for: "${searchQuery}"...`);
-  const searchResult = PinterestApi.searchPins(searchQuery);
+  const sourceDesc = options.source === 'all'
+    ? 'Pinterest + Dribbble'
+    : options.source === 'dribbble'
+      ? 'Dribbble'
+      : 'Pinterest';
+
+  console.log(`\n📡 Fetching reference images from ${sourceDesc} for: "${searchQuery}"...`);
+  const searchResult = ReferenceApi.search(options.source, searchQuery, options.count);
 
   const candidates = searchResult.data.slice(0, options.count);
   if (candidates.length === 0) {
@@ -186,14 +231,15 @@ async function run() {
 
   console.log(`🎨 Building composite contact sheet image...`);
   const contactSheetPath = path.join(outputDir, 'contact_sheet.jpg');
-  await buildContactSheet(downloaded, searchQuery, contactSheetPath);
+  await buildContactSheet(downloaded, searchQuery, contactSheetPath, { source: options.source });
 
   console.log(`🌐 Building interactive HTML gallery...`);
   const galleryPath = path.join(outputDir, 'gallery.html');
-  buildHtmlGallery(downloaded, searchQuery, galleryPath);
+  buildHtmlGallery(downloaded, searchQuery, galleryPath, { source: options.source });
 
   console.log(`\n======================================================`);
   console.log(`✨ PINREF BATCH COMPLETE!`);
+  console.log(`🔎 Source:          ${sourceDesc}`);
   console.log(`📁 Download Folder: file://${outputDir}`);
   console.log(`🖼️  Contact Sheet:  file://${contactSheetPath}`);
   console.log(`🌐 HTML Gallery:   file://${galleryPath}`);
@@ -206,7 +252,11 @@ async function run() {
   console.log(`======================================================\n`);
   console.log(`💡 Next steps:`);
   console.log(`1. View the single contact sheet: file://${contactSheetPath}`);
-  console.log(`2. To find variations of any pin: pinref similar "<pinId>"\n`);
+  if (options.source === 'dribbble') {
+    console.log(`2. To find variations of any shot: pinref similar "<shotId>" --source dribbble\n`);
+  } else {
+    console.log(`2. To find variations of any pin: pinref similar "<pinId>"\n`);
+  }
 }
 
 run().catch(err => {
